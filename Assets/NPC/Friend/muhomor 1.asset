@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89032161b24f79b448dab6c6325089b5, type: 3}
+  m_Name: muhomor 1
+  m_EditorClassIdentifier: 
+  npcName: "\u0420\u044B\u0436\u0438\u0439"
+  npcPortrait: {fileID: 263548739, guid: f0488d7e04b6adc43aac731461d8550e, type: 3}
+  dialogueLines:
+  - muhomor 1
+  autoProgressLines: 
+  autoProgressDelay: 1.5
+  typingSpeed: 0.05
+  voiceSound: {fileID: 8300000, guid: 589d5bef66a08c84082274781c35e9b3, type: 3}
+  voicePitch: 1
