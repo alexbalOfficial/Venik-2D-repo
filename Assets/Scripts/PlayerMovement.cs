@@ -31,7 +31,8 @@ public class PlayerMovement : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
-
+        if (!enabled)
+            return;
         if (context.canceled)
         {
             StopMovementAnimations();
@@ -46,5 +47,19 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("isWalking", false);
         animator.SetFloat("LastInputX", moveInput.x);
         animator.SetFloat("LastInputY", moveInput.y);
+    }
+    public void ResetMovement()
+    {
+        moveInput = Vector2.zero;
+
+        if (rb != null)
+            rb.velocity = Vector2.zero;
+
+        if (animator != null)
+        {
+            animator.SetBool("isWalking", false);
+            animator.SetFloat("LastInputX", 0f);
+            animator.SetFloat("LastInputY", -1f);
+        }
     }
 }
