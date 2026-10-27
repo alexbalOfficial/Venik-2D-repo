@@ -12,6 +12,7 @@ public class MotorcycleController : MonoBehaviour, IInteractable
     [SerializeField] private Vector2 verticalColliderSize = new Vector2(0.55f, 1.2f);
     [SerializeField] private Vector2 horizontalColliderOffset = Vector2.zero;
     [SerializeField] private Vector2 verticalColliderOffset = Vector2.zero;
+    private bool wasInteractPressed;
 
     private BoxCollider2D motorcycleCollider;
     public enum Direction
@@ -63,6 +64,7 @@ public class MotorcycleController : MonoBehaviour, IInteractable
     private Vector2 heading;
     private float currentSpeed;
     private bool isRiding;
+    private bool justMounted;
 
     private Transform rider;
     private Rigidbody2D riderRb;
@@ -95,8 +97,21 @@ public class MotorcycleController : MonoBehaviour, IInteractable
 
     private void Update()
     {
+        if (justMounted)
+        {
+            justMounted = false;
+            UpdateSprite();
+            return;
+        }
+
+        if (isRiding && Keyboard.current != null &&
+            Keyboard.current.eKey.wasPressedThisFrame)
+        {
+            Dismount();
+            return;
+        }
+
         UpdateSprite();
-        
     }
 
     private void FixedUpdate()
@@ -271,8 +286,13 @@ public class MotorcycleController : MonoBehaviour, IInteractable
         rb.velocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Dynamic;
 
-        isRiding = true;
+        InteractionDetector detector =
+    rider.GetComponent<InteractionDetector>();
 
+        if (detector != null)
+            detector.enabled = false;
+        isRiding = true;
+        justMounted = true;
 
         UpdateSprite();
     }
@@ -334,6 +354,14 @@ public class MotorcycleController : MonoBehaviour, IInteractable
         {
             riderMovement.enabled = true;
             riderMovement.ResetMovement();
+        }
+        if (riderMovement != null)
+        {
+            InteractionDetector detector =
+                riderMovement.GetComponent<InteractionDetector>();
+
+            if (detector != null)
+                detector.enabled = true;
         }
 
         rider = null;
