@@ -1,16 +1,26 @@
+
 using Cinemachine;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MapTransition : MonoBehaviour
 {
-    [SerializeField] PolygonCollider2D mapBoundry;
-    CinemachineConfiner confiner;
-    [SerializeField] Direction direction;
-    [SerializeField] float addirivePos = 1f;
+    [SerializeField] private PolygonCollider2D mapBoundry;
+    [SerializeField] private Direction direction;
+    [SerializeField] private float addirivePos = 1f;
 
-    enum Direction { Up, Down, Left, Right }
+    private CinemachineConfiner confiner;
+
+    private enum Direction
+    {
+        Up,
+        Down,
+        Left,
+        Right
+    }
+
+    // Общая блокировка для всех переходов между картами.
+    private static bool transitionInProgress;
+
     private void Awake()
     {
         confiner = FindObjectOfType<CinemachineConfiner>();
@@ -18,42 +28,74 @@ public class MapTransition : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (transitionInProgress)
+            return;
+
+        GameObject target = null;
+
+        if (collision.CompareTag("Player"))
         {
-            FadeTransition(collision.gameObject);
+            target = collision.gameObject;
         }
-    }
-
-    async void FadeTransition(GameObject player)
-    {
-        PauseController.SetPause(true);
-        await ScreenFader.Instance.FadeOut();
-        confiner.m_BoundingShape2D = mapBoundry;
-        UpdatePlayerPosition(player);
-        await ScreenFader.Instance.FadeIn();
-        PauseController.SetPause(false);
-    }
-
-    private void UpdatePlayerPosition(GameObject player)
-    {
-        Vector3 newPos = player.transform.position;
-
-        switch (direction)
+        else
         {
-            case Direction.Up:
-                newPos.y += addirivePos;
-                break;
-            case Direction.Down:
-                newPos.y -= addirivePos;
-                break;
+            MotorcycleController motorcycle =
+                collision.GetComponentInParent<MotorcycleController>();
+
+            if (motorcycle != null && motorcycle.IsRiding)
+                target = motorcycle.gameObject;
+        }
+
+        if (target != null)
+            StartCoroutine(Transition(target));
+    }
+
+    private System.Collections.IEnumerator Transition(GameObject target)
+    {
+        transitionInProgress = true;
+
+        try
+        {
+            PauseController.SetPause(true);
+
+            // FadeOut/FadeIn у вас асинхронные, поэтому
+            // используем отдельную последовательность ниже.
+            var fadeOut = ScreenFader.Instance.FadeOut();
+            while (!fadeOut.IsCompleted)
+                yield return null;
+
+            if (confiner != null && mapBoundry != null)
+                confiner.m_BoundingShape2D = mapBoundry;
+
+            Vector3 newPos = target.transform.position;
+
+            switch (direction)
+            {
+                case Direction.Up:
+                    newPos.y += addirivePos;
+                    break;
+                case Direction.Down:
+                    newPos.y -= addirivePos;
+                    break;
                 case Direction.Left:
-                newPos.x += addirivePos;
-                break;
-            case Direction.Right:
-                newPos.x -= addirivePos;
-                break;
-        }
+                    newPos.x += addirivePos;
+                    break;
+                case Direction.Right:
+                    newPos.x -= addirivePos;
+                    break;
+            }
 
-        player.transform.position = newPos;
+            target.transform.position = newPos;
+
+            var fadeIn = ScreenFader.Instance.FadeIn();
+            while (!fadeIn.IsCompleted)
+                yield return null;
+
+            PauseController.SetPause(false);
+        }
+        finally
+        {
+            transitionInProgress = false;
+        }
     }
 }

@@ -1,10 +1,11 @@
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(SpriteRenderer))]
-[RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(BoxCollider2D))]
 public class MotorcycleController : MonoBehaviour, IInteractable
 {
     [Header("Collider sizes")]
@@ -12,9 +13,9 @@ public class MotorcycleController : MonoBehaviour, IInteractable
     [SerializeField] private Vector2 verticalColliderSize = new Vector2(0.55f, 1.2f);
     [SerializeField] private Vector2 horizontalColliderOffset = Vector2.zero;
     [SerializeField] private Vector2 verticalColliderOffset = Vector2.zero;
-    private bool wasInteractPressed;
 
     private BoxCollider2D motorcycleCollider;
+
     public enum Direction
     {
         Up,
@@ -43,27 +44,22 @@ public class MotorcycleController : MonoBehaviour, IInteractable
     [SerializeField] private Direction initialDirection = Direction.Down;
 
     [Header("Movement")]
-    [SerializeField] private float maxSpeed = 5.5f;
-    [SerializeField] private float acceleration = 3f;
-    [SerializeField] private float braking = 5f;
-    [SerializeField] private float naturalDeceleration = 1.5f;
-    [SerializeField] private float turnSpeed = 120f;
-
-    [Header("Turning")]
-    [SerializeField, Range(0f, 1f)]
-    private float turningAtZeroSpeed = 0.25f;
+    [SerializeField] private float maxSpeed = 7f;
+    [SerializeField] private float acceleration = 12f;
+    [SerializeField] private float deceleration = 10f;
+    [SerializeField] private float reverseAcceleration = 8f;
 
     [Header("Dismount")]
-    [SerializeField]
-    private Vector2 defaultExitOffset =
-        new Vector2(1.2f, 0f);
+    [SerializeField] private Vector2 defaultExitOffset = new Vector2(1.2f, 0f);
 
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
 
     private Vector2 heading;
-    private float currentSpeed;
-    private bool isRiding;
+    private Vector2 currentVelocity;
+    private Vector2 inputDirection;
+
+    public bool IsRiding { get; private set; }
     private bool justMounted;
 
     private Transform rider;
@@ -78,6 +74,85 @@ public class MotorcycleController : MonoBehaviour, IInteractable
     private SpriteRenderer[] riderRenderers;
     private bool[] originalRendererStates;
 
+
+
+    private const string MotorcycleXKey = "MotorcycleX";
+    private const string MotorcycleYKey = "MotorcycleY";
+    private const string MotorcycleHeadingXKey = "MotorcycleHeadingX";
+    private const string MotorcycleHeadingYKey = "MotorcycleHeadingY";
+    private const string MotorcycleRidingKey = "MotorcycleWasRiding";
+
+    private void Start()
+    {
+        LoadSavedStateImmediately();
+    }
+
+    private void LoadSavedStateImmediately()
+    {
+        if (PlayerPrefs.HasKey(MotorcycleXKey))
+        {
+            Vector3 savedPosition = new Vector3(
+                PlayerPrefs.GetFloat(MotorcycleXKey),
+                PlayerPrefs.GetFloat(MotorcycleYKey),
+                transform.position.z
+            );
+
+            transform.position = savedPosition;
+            rb.position = new Vector2(savedPosition.x, savedPosition.y);
+        }
+
+        if (PlayerPrefs.HasKey(MotorcycleHeadingXKey))
+        {
+            heading = new Vector2(
+                PlayerPrefs.GetFloat(MotorcycleHeadingXKey),
+                PlayerPrefs.GetFloat(MotorcycleHeadingYKey)
+            );
+
+            if (heading.sqrMagnitude > 0.001f)
+                heading.Normalize();
+            else
+                heading = DirectionToVector(initialDirection);
+        }
+
+        UpdateSprite();
+
+        if (PlayerPrefs.GetInt(MotorcycleRidingKey, 0) == 1)
+        {
+            if (playerMovement != null)
+            {
+                Mount();
+            }
+            else
+            {
+                Debug.LogError(
+                    "MotorcycleController: PlayerMovement is not assigned.",
+                    this
+                );
+            }
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveMotorcycleState();
+    }
+
+    public void SaveMotorcycleState()
+    {
+        PlayerPrefs.SetFloat(MotorcycleXKey, transform.position.x);
+        PlayerPrefs.SetFloat(MotorcycleYKey, transform.position.y);
+
+        PlayerPrefs.SetFloat(MotorcycleHeadingXKey, heading.x);
+        PlayerPrefs.SetFloat(MotorcycleHeadingYKey, heading.y);
+
+        PlayerPrefs.SetInt(
+            MotorcycleRidingKey,
+            IsRiding ? 1 : 0
+        );
+
+        PlayerPrefs.Save();
+    }
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -89,7 +164,6 @@ public class MotorcycleController : MonoBehaviour, IInteractable
         rb.gravityScale = 0f;
         rb.freezeRotation = true;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-
         rb.bodyType = RigidbodyType2D.Static;
 
         UpdateSprite();
@@ -104,7 +178,7 @@ public class MotorcycleController : MonoBehaviour, IInteractable
             return;
         }
 
-        if (isRiding && Keyboard.current != null &&
+        if (IsRiding && Keyboard.current != null &&
             Keyboard.current.eKey.wasPressedThisFrame)
         {
             Dismount();
@@ -116,7 +190,7 @@ public class MotorcycleController : MonoBehaviour, IInteractable
 
     private void FixedUpdate()
     {
-        if (!isRiding)
+        if (!IsRiding)
             return;
 
         Keyboard keyboard = Keyboard.current;
@@ -124,64 +198,78 @@ public class MotorcycleController : MonoBehaviour, IInteractable
         if (keyboard == null)
             return;
 
-        float dt = Time.fixedDeltaTime;
-
-        bool accelerating = keyboard.wKey.isPressed;
-        bool brakingNow = keyboard.sKey.isPressed;
-
-        float turnInput = 0f;
+        float x = 0f;
+        float y = 0f;
 
         if (keyboard.aKey.isPressed)
-            turnInput += 1f;
+            x -= 1f;
 
         if (keyboard.dKey.isPressed)
-            turnInput -= 1f;
+            x += 1f;
 
-        // Turn the motorcycle gradually.
-        float speedFactor = Mathf.Clamp01(currentSpeed / maxSpeed);
-        float turnFactor = Mathf.Lerp(
-            turningAtZeroSpeed,
-            1f,
-            speedFactor
-        );
+        if (keyboard.sKey.isPressed)
+            y -= 1f;
 
-        float turnAngle = turnInput * turnSpeed *
-                          turnFactor * dt;
+        if (keyboard.wKey.isPressed)
+            y += 1f;
 
-        heading = Quaternion.Euler(0f, 0f, turnAngle) * heading;
-        heading.Normalize();
+        inputDirection = new Vector2(x, y);
 
-        // W accelerates forward.
-        if (accelerating && !brakingNow)
+        // Не позволяем диагонали двигаться быстрее.
+        if (inputDirection.sqrMagnitude > 1f)
+            inputDirection.Normalize();
+
+        float dt = Time.fixedDeltaTime;
+
+        if (inputDirection != Vector2.zero)
         {
-            currentSpeed = Mathf.MoveTowards(
-                currentSpeed,
-                maxSpeed,
-                acceleration * dt
+            // Быстро меняем скорость в сторону нажатых клавиш.
+            // Это уменьшает боковой занос при смене направления.
+            float rate = acceleration;
+
+            if (Vector2.Dot(currentVelocity, inputDirection) < 0f)
+                rate = reverseAcceleration;
+
+            currentVelocity = Vector2.MoveTowards(
+                currentVelocity,
+                inputDirection * maxSpeed,
+                rate * dt
             );
         }
-        // S brakes without reversing.
-        else if (brakingNow)
-        {
-            currentSpeed = Mathf.MoveTowards(
-                currentSpeed,
-                0f,
-                braking * dt
-            );
-        }
-        // Gradual slowdown when no key is pressed.
         else
         {
-            currentSpeed = Mathf.MoveTowards(
-                currentSpeed,
-                0f,
-                naturalDeceleration * dt
+            // Быстро тормозим, когда клавиши отпущены.
+            currentVelocity = Vector2.MoveTowards(
+                currentVelocity,
+                Vector2.zero,
+                deceleration * dt
             );
         }
 
-        rb.velocity = heading * currentSpeed;
+        rb.velocity = currentVelocity;
 
-        // Keep the actual player at the motorcycle position.
+        // Меняем направление спрайта, только если одна ось
+        // заметно преобладает над другой.
+        if (currentVelocity.sqrMagnitude > 0.25f)
+        {
+            float velocityX = Mathf.Abs(currentVelocity.x);
+            float velocityY = Mathf.Abs(currentVelocity.y);
+
+            if (velocityX > velocityY * 1.3f)
+            {
+                heading = currentVelocity.x > 0f
+                    ? Vector2.right
+                    : Vector2.left;
+            }
+            else if (velocityY > velocityX * 1.3f)
+            {
+                heading = currentVelocity.y > 0f
+                    ? Vector2.up
+                    : Vector2.down;
+            }
+        }
+
+        // Персонаж остаётся на мотоцикле.
         if (rider != null)
         {
             rider.position = new Vector3(
@@ -199,7 +287,7 @@ public class MotorcycleController : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        if (isRiding)
+        if (IsRiding)
         {
             Dismount();
             return;
@@ -221,7 +309,6 @@ public class MotorcycleController : MonoBehaviour, IInteractable
     {
         riderMovement = playerMovement;
         rider = riderMovement.transform;
-
         riderRb = rider.GetComponent<Rigidbody2D>();
 
         if (riderRb == null)
@@ -239,36 +326,26 @@ public class MotorcycleController : MonoBehaviour, IInteractable
         riderZ = rider.position.z;
         originalRiderBodyType = riderRb.bodyType;
 
-        // Запоминаем и отключаем обычное управление игроком.
         riderMovement.ResetMovement();
         riderMovement.enabled = false;
 
         riderRb.velocity = Vector2.zero;
         riderRb.bodyType = RigidbodyType2D.Kinematic;
 
-        // Сохраняем состояние коллайдеров игрока.
-        riderColliders =
-            rider.GetComponentsInChildren<Collider2D>(true);
-
-        originalColliderStates =
-            new bool[riderColliders.Length];
+        riderColliders = rider.GetComponentsInChildren<Collider2D>(true);
+        originalColliderStates = new bool[riderColliders.Length];
 
         for (int i = 0; i < riderColliders.Length; i++)
         {
             Collider2D col = riderColliders[i];
-
             originalColliderStates[i] = col.enabled;
 
             if (!col.isTrigger)
                 col.enabled = false;
         }
 
-        // Сохраняем состояние спрайтов и скрываем игрока.
-        riderRenderers =
-            rider.GetComponentsInChildren<SpriteRenderer>(true);
-
-        originalRendererStates =
-            new bool[riderRenderers.Length];
+        riderRenderers = rider.GetComponentsInChildren<SpriteRenderer>(true);
+        originalRendererStates = new bool[riderRenderers.Length];
 
         for (int i = 0; i < riderRenderers.Length; i++)
         {
@@ -282,16 +359,18 @@ public class MotorcycleController : MonoBehaviour, IInteractable
             riderZ
         );
 
-        currentSpeed = 0f;
+        currentVelocity = Vector2.zero;
         rb.velocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Dynamic;
 
+        // Отключаем детектор, чтобы E не обрабатывал другие объекты.
         InteractionDetector detector =
-    rider.GetComponent<InteractionDetector>();
+            rider.GetComponent<InteractionDetector>();
 
         if (detector != null)
             detector.enabled = false;
-        isRiding = true;
+
+        IsRiding = true;
         justMounted = true;
 
         UpdateSprite();
@@ -301,13 +380,15 @@ public class MotorcycleController : MonoBehaviour, IInteractable
     {
         if (rider == null)
         {
-            isRiding = false;
+            IsRiding = false;
+            currentVelocity = Vector2.zero;
+            rb.velocity = Vector2.zero;
             rb.bodyType = RigidbodyType2D.Static;
             return;
         }
 
-        isRiding = false;
-        currentSpeed = 0f;
+        IsRiding = false;
+        currentVelocity = Vector2.zero;
         rb.velocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Static;
 
@@ -321,29 +402,24 @@ public class MotorcycleController : MonoBehaviour, IInteractable
             riderZ
         );
 
-        // Возвращаем коллайдеры игрока.
         if (riderColliders != null && originalColliderStates != null)
         {
             for (int i = 0; i < riderColliders.Length; i++)
             {
                 if (riderColliders[i] != null)
-                    riderColliders[i].enabled =
-                        originalColliderStates[i];
+                    riderColliders[i].enabled = originalColliderStates[i];
             }
         }
 
-        // Возвращаем отображение игрока.
         if (riderRenderers != null && originalRendererStates != null)
         {
             for (int i = 0; i < riderRenderers.Length; i++)
             {
                 if (riderRenderers[i] != null)
-                    riderRenderers[i].enabled =
-                        originalRendererStates[i];
+                    riderRenderers[i].enabled = originalRendererStates[i];
             }
         }
 
-        // Возвращаем физику и управление.
         if (riderRb != null)
         {
             riderRb.velocity = Vector2.zero;
@@ -354,9 +430,7 @@ public class MotorcycleController : MonoBehaviour, IInteractable
         {
             riderMovement.enabled = true;
             riderMovement.ResetMovement();
-        }
-        if (riderMovement != null)
-        {
+
             InteractionDetector detector =
                 riderMovement.GetComponent<InteractionDetector>();
 
@@ -376,36 +450,33 @@ public class MotorcycleController : MonoBehaviour, IInteractable
         UpdateSprite();
     }
 
-
     private void UpdateSprite()
     {
         if (spriteRenderer == null)
             return;
 
-        // Выбираем спрайт по направлению мотоцикла,
-        // а не по текущему вектору скорости.
-        Vector2 direction = heading;
-
         Sprite selectedSprite;
 
-        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+        if (Mathf.Abs(heading.x) > Mathf.Abs(heading.y))
         {
-            selectedSprite = direction.x > 0f
-                ? (isRiding ? rightWithPlayer : rightSprite)
-                : (isRiding ? leftWithPlayer : leftSprite);
+            selectedSprite = heading.x > 0f
+                ? (IsRiding ? rightWithPlayer : rightSprite)
+                : (IsRiding ? leftWithPlayer : leftSprite);
         }
         else
         {
-            selectedSprite = direction.y > 0f
-                ? (isRiding ? upWithPlayer : upSprite)
-                : (isRiding ? downWithPlayer : downSprite);
+            selectedSprite = heading.y > 0f
+                ? (IsRiding ? upWithPlayer : upSprite)
+                : (IsRiding ? downWithPlayer : downSprite);
         }
 
         if (selectedSprite != null)
             spriteRenderer.sprite = selectedSprite;
+
         if (motorcycleCollider != null)
         {
-            bool horizontal = Mathf.Abs(direction.x) > Mathf.Abs(direction.y);
+            bool horizontal =
+                Mathf.Abs(heading.x) > Mathf.Abs(heading.y);
 
             motorcycleCollider.size = horizontal
                 ? horizontalColliderSize
@@ -416,7 +487,6 @@ public class MotorcycleController : MonoBehaviour, IInteractable
                 : verticalColliderOffset;
         }
     }
-
 
     private Vector2 DirectionToVector(Direction direction)
     {
@@ -441,10 +511,15 @@ public class MotorcycleController : MonoBehaviour, IInteractable
 
     private void OnDisable()
     {
-        // Avoid leaving the player hidden if this component
-        // is disabled while someone is riding.                                                                                                                                                                             
-        if (isRiding)
+        if (IsRiding)
             Dismount();
     }
-}
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!IsRiding)
+            return;
 
+        currentVelocity = Vector2.zero;
+        rb.velocity = Vector2.zero;
+    }
+}
