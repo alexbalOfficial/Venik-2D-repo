@@ -68,6 +68,7 @@ public class MotorcycleController : MonoBehaviour, IInteractable
     private float engineStartTimer;
 
     public float CurrentSpeed => currentVelocity.magnitude;
+    public float SpeedChange { get; private set; }
     private bool justMounted;
 
     private Transform rider;
@@ -275,6 +276,10 @@ public class MotorcycleController : MonoBehaviour, IInteractable
                 deceleration * dt
             );
         }
+
+        float previousSpeed = rb.velocity.magnitude;
+        SpeedChange = (currentVelocity.magnitude - previousSpeed)
+            / Time.fixedDeltaTime;
 
         rb.velocity = currentVelocity;
 

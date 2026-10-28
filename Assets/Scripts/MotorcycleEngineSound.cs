@@ -93,17 +93,22 @@ public class MotorcycleEngineSound : MonoBehaviour
         {
             bool moving = false;
 
+            bool movingInput = false;
+
             if (Keyboard.current != null)
             {
-                moving =
+                movingInput =
                     Keyboard.current.wKey.isPressed ||
                     Keyboard.current.aKey.isPressed ||
                     Keyboard.current.sKey.isPressed ||
                     Keyboard.current.dKey.isPressed;
             }
 
-            UpdateLoop(idleSource, yupakIdle, !moving);
-            UpdateLoop(runSource, yupakRun, moving);
+            bool acceleratingOrCruising =
+                movingInput && motorcycle.SpeedChange >= -0.5f;
+
+            UpdateLoop(idleSource, yupakIdle, !acceleratingOrCruising);
+            UpdateLoop(runSource, yupakRun, acceleratingOrCruising);
         }
         else
         {
