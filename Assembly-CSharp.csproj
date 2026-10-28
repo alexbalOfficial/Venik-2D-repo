@@ -64,6 +64,7 @@
     <Compile Include="Assets\Scripts\IInteractable.cs" />
     <Compile Include="Assets\Scripts\PauseController.cs" />
     <Compile Include="Assets\Scripts\MapTransition.cs" />
+    <Compile Include="Assets\Scripts\MotorcycleEngineSound.cs" />
     <Compile Include="Assets\Scripts\GlobalHelper.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\MusicManager.cs" />

@@ -60,6 +60,14 @@ public class MotorcycleController : MonoBehaviour, IInteractable
     private Vector2 inputDirection;
 
     public bool IsRiding { get; private set; }
+    [Header("Engine startup")]
+    [SerializeField] private float engineStartDuration = 2f;
+
+    public bool IsEngineStarting { get; private set; }
+
+    private float engineStartTimer;
+
+    public float CurrentSpeed => currentVelocity.magnitude;
     private bool justMounted;
 
     private Transform rider;
@@ -192,6 +200,28 @@ public class MotorcycleController : MonoBehaviour, IInteractable
     {
         if (!IsRiding)
             return;
+
+        if (IsEngineStarting)
+        {
+            engineStartTimer -= Time.fixedDeltaTime;
+
+            currentVelocity = Vector2.zero;
+            rb.velocity = Vector2.zero;
+
+            if (rider != null)
+            {
+                rider.position = new Vector3(
+                    rb.position.x,
+                    rb.position.y,
+                    riderZ
+                );
+            }
+
+            if (engineStartTimer <= 0f)
+                IsEngineStarting = false;
+
+            return;
+        }
 
         Keyboard keyboard = Keyboard.current;
 
@@ -371,6 +401,9 @@ public class MotorcycleController : MonoBehaviour, IInteractable
             detector.enabled = false;
 
         IsRiding = true;
+        IsEngineStarting = true;
+        engineStartTimer = engineStartDuration;
+
         justMounted = true;
 
         UpdateSprite();
@@ -381,6 +414,7 @@ public class MotorcycleController : MonoBehaviour, IInteractable
         if (rider == null)
         {
             IsRiding = false;
+            IsEngineStarting = false;
             currentVelocity = Vector2.zero;
             rb.velocity = Vector2.zero;
             rb.bodyType = RigidbodyType2D.Static;
@@ -388,6 +422,7 @@ public class MotorcycleController : MonoBehaviour, IInteractable
         }
 
         IsRiding = false;
+        IsEngineStarting = false;   
         currentVelocity = Vector2.zero;
         rb.velocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Static;
