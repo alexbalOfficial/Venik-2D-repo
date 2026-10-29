@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f0488d7e04b6adc43aac731461d8550e
+guid: d9c80e0595367a140aaf67e65c9db6c9
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -136,7 +136,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: friend1_walk_0
+      name: friend_walk_0
       rect:
         serializedVersion: 2
         x: 0
@@ -150,14 +150,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 48b0c3ab233d7a241bc8637f0bca2e79
-      internalID: 263548739
+      spriteID: 57d1219094a29d04f979dda406997d0b
+      internalID: -1876001157
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_1
+      name: friend_walk_1
       rect:
         serializedVersion: 2
         x: 16
@@ -171,14 +171,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a1aad1831e19a5742b96124df2823e8d
-      internalID: 1946049102
+      spriteID: b9849285af416854393ad04eeca1727f
+      internalID: -1751313916
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_2
+      name: friend_walk_2
       rect:
         serializedVersion: 2
         x: 32
@@ -192,14 +192,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 345c4016ae1ea314caed773cbd85cb47
-      internalID: -1966055014
+      spriteID: 8f141d6b8d565914d87b0e8c0b24b813
+      internalID: -1066849447
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_3
+      name: friend_walk_3
       rect:
         serializedVersion: 2
         x: 48
@@ -213,14 +213,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fdedb44c1957310439824b41fcc5b344
-      internalID: 1357335418
+      spriteID: 2ddcb86f32270c84db88205fb07a6b6b
+      internalID: -174180061
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_4
+      name: friend_walk_4
       rect:
         serializedVersion: 2
         x: 0
@@ -234,14 +234,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ed66cf00d4d7d4d4e965386f68808d27
-      internalID: 786572891
+      spriteID: e1e33a53fa192b345b0394b6c4976cef
+      internalID: 440735980
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_5
+      name: friend_walk_5
       rect:
         serializedVersion: 2
         x: 16
@@ -255,14 +255,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ba2a0bfe52a65684da34298af9094ac5
-      internalID: -118484100
+      spriteID: 5dee781a119565e44971a0de94611473
+      internalID: 288689549
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_6
+      name: friend_walk_6
       rect:
         serializedVersion: 2
         x: 32
@@ -276,14 +276,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 289f021b9c72845449734b3222ea1c91
-      internalID: -510067099
+      spriteID: 0bd1531030227424ebd999e11487303e
+      internalID: 121728148
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_7
+      name: friend_walk_7
       rect:
         serializedVersion: 2
         x: 48
@@ -297,14 +297,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1ad5c506a4204ea49b411389e77b479f
-      internalID: 174986468
+      spriteID: f520f24a5fd113640a9c06951a59e787
+      internalID: -390429993
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_8
+      name: friend_walk_8
       rect:
         serializedVersion: 2
         x: 0
@@ -318,14 +318,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 74acedbd38ecab043b3882e0dc0c4be7
-      internalID: 553286594
+      spriteID: af66fd1cf277e5140845d5a48bcb863d
+      internalID: -131666019
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_9
+      name: friend_walk_9
       rect:
         serializedVersion: 2
         x: 16
@@ -339,14 +339,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5ecae4ccd8134f44ca3b0fe5370ad6d1
-      internalID: 661188515
+      spriteID: 46d4a6057e9b00e4da2621869caff98f
+      internalID: -1291555077
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_10
+      name: friend_walk_10
       rect:
         serializedVersion: 2
         x: 32
@@ -360,14 +360,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5352cb4e51971d248b966381cca7d3fb
-      internalID: -1189802576
+      spriteID: 35318269cc5b86942a64361bdf4dc3fd
+      internalID: -1542183420
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_11
+      name: friend_walk_11
       rect:
         serializedVersion: 2
         x: 48
@@ -381,14 +381,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5e9d497407794d04ba7990dc4a01cfed
-      internalID: 1987681818
+      spriteID: 0369583b5f3afdc42b7c54d8c14d0be2
+      internalID: 723607243
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_12
+      name: friend_walk_12
       rect:
         serializedVersion: 2
         x: 0
@@ -402,14 +402,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1617a018ae837ee4b9b5e95e6f08a835
-      internalID: 1693878326
+      spriteID: b7543596c87ea1e478793c99c49fb206
+      internalID: 2070418972
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_13
+      name: friend_walk_13
       rect:
         serializedVersion: 2
         x: 16
@@ -423,14 +423,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9670e9251f6c7034c934864ab3fe3316
-      internalID: 1284378515
+      spriteID: b9074194302dabd4aad07874b9d87054
+      internalID: 1133402069
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_14
+      name: friend_walk_14
       rect:
         serializedVersion: 2
         x: 32
@@ -444,14 +444,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 19d11f5d7f6a79444aff0207eff73455
-      internalID: 916644144
+      spriteID: a675c5534a0131541912499760fbe7c8
+      internalID: 74485397
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: friend1_walk_15
+      name: friend_walk_15
       rect:
         serializedVersion: 2
         x: 48
@@ -465,8 +465,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 083f6a5bbd37e384195a1d7fce048068
-      internalID: 1905093338
+      spriteID: fe14370b13df9d443be7274fd80e7b5a
+      internalID: 1408420360
       vertices: []
       indices: 
       edges: []
@@ -482,22 +482,22 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      friend1_walk_0: 263548739
-      friend1_walk_1: 1946049102
-      friend1_walk_10: -1189802576
-      friend1_walk_11: 1987681818
-      friend1_walk_12: 1693878326
-      friend1_walk_13: 1284378515
-      friend1_walk_14: 916644144
-      friend1_walk_15: 1905093338
-      friend1_walk_2: -1966055014
-      friend1_walk_3: 1357335418
-      friend1_walk_4: 786572891
-      friend1_walk_5: -118484100
-      friend1_walk_6: -510067099
-      friend1_walk_7: 174986468
-      friend1_walk_8: 553286594
-      friend1_walk_9: 661188515
+      friend_walk_0: -1876001157
+      friend_walk_1: -1751313916
+      friend_walk_10: -1542183420
+      friend_walk_11: 723607243
+      friend_walk_12: 2070418972
+      friend_walk_13: 1133402069
+      friend_walk_14: 74485397
+      friend_walk_15: 1408420360
+      friend_walk_2: -1066849447
+      friend_walk_3: -174180061
+      friend_walk_4: 440735980
+      friend_walk_5: 288689549
+      friend_walk_6: 121728148
+      friend_walk_7: -390429993
+      friend_walk_8: -131666019
+      friend_walk_9: -1291555077
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
