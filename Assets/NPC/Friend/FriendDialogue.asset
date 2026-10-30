@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FriendDialogue
   m_EditorClassIdentifier: 
   npcName: "\u0420\u044B\u0436\u0438\u0439"
-  npcPortrait: {fileID: 263548739, guid: f0488d7e04b6adc43aac731461d8550e, type: 3}
+  npcPortrait: {fileID: -1765652593, guid: c445f78873549684d9bcb26909414747, type: 3}
   dialogueLines:
   - "\u0419\u043E\u0443, \u0437\u0434\u0430\u0440\u043E\u0432\u0430! \u042F \u043C\u043E\u0442\u043E\u0431\u0440\u0430\u0442"
   - "\u042D\u0442\u043E Venik 2D 0.4"

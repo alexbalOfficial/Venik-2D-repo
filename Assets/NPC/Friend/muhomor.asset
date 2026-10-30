@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: muhomor
   m_EditorClassIdentifier: 
   npcName: "\u0420\u044B\u0436\u0438\u0439"
-  npcPortrait: {fileID: 263548739, guid: f0488d7e04b6adc43aac731461d8550e, type: 3}
+  npcPortrait: {fileID: -1765652593, guid: c445f78873549684d9bcb26909414747, type: 3}
   dialogueLines:
   - muhomor
   autoProgressLines: 
