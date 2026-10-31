@@ -64,6 +64,8 @@
     <Compile Include="Assets\Scripts\IInteractable.cs" />
     <Compile Include="Assets\Scripts\PauseController.cs" />
     <Compile Include="Assets\Scripts\MapTransition.cs" />
+    <Compile Include="Assets\Scripts\MainMenu.cs" />
+    <Compile Include="Assets\Scripts\SaveSelectionMenu.cs" />
     <Compile Include="Assets\Scripts\MotorcycleEngineSound.cs" />
     <Compile Include="Assets\Scripts\GlobalHelper.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
@@ -80,6 +82,7 @@
     <Compile Include="Assets\Scripts\PlayerSave.cs" />
     <Compile Include="Assets\Scripts\SoundEffectManager.cs" />
     <Compile Include="Assets\Scripts\DialogueCondition.cs" />
+    <Compile Include="Assets\Scripts\SaveSystem.cs" />
     <Compile Include="Assets\Scripts\FlagTester.cs" />
     <Compile Include="Assets\NPCDialogue.cs" />
   </ItemGroup>
