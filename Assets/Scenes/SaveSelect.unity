@@ -1568,12 +1568,12 @@ MonoBehaviour:
   - {fileID: 980290962}
   - {fileID: 307404218}
   - {fileID: 1330544759}
-  - {fileID: 1330544759}
+  - {fileID: 1689482481}
   - {fileID: 426018671}
   - {fileID: 1615867605}
   normalTextColor: {r: 1, g: 1, b: 1, a: 1}
-  selectedTextColor: {r: 0.75, g: 0.9, b: 0.55, a: 1}
-  newGameSceneName: Game
+  selectedTextColor: {r: 1, g: 0, b: 0.14646244, a: 1}
+  newGameSceneName: vnk1
 --- !u!4 &1562164750
 Transform:
   m_ObjectHideFlags: 0

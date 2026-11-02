@@ -49,24 +49,35 @@ public class MainMenu : MonoBehaviour
         SelectButton();
     }
 
+
     private void Update()
     {
-        if (loading || Keyboard.current == null ||
-            buttons == null || buttons.Length == 0)
+        if (loading || buttons == null || buttons.Length == 0)
             return;
 
-        if (Keyboard.current.wKey.wasPressedThisFrame)
+        if (MenuInputSettings.WasPressed(MenuAction.Up) ||
+            MenuInputSettings.WasPressed(MenuAction.Left))
+        {
             MoveSelection(-1);
+        }
 
-        if (Keyboard.current.sKey.wasPressedThisFrame)
+        if (MenuInputSettings.WasPressed(MenuAction.Down) ||
+            MenuInputSettings.WasPressed(MenuAction.Right))
+        {
             MoveSelection(1);
+        }
 
-        if (Keyboard.current.enterKey.wasPressedThisFrame ||
-            Keyboard.current.numpadEnterKey.wasPressedThisFrame)
+        if (MenuInputSettings.WasPressed(MenuAction.Confirm))
         {
             ActivateSelected();
         }
+
+        if (MenuInputSettings.WasPressed(MenuAction.Back))
+        {
+            // Позже подключим возврат или закрытие текущего меню.
+        }
     }
+
 
     private void MoveSelection(int direction)
     {

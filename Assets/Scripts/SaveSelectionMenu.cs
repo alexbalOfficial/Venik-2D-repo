@@ -57,32 +57,52 @@ public class SaveSelectionMenu : MonoBehaviour
         UpdateTextColors();
     }
 
+
     private void Update()
     {
-        if (loading || Keyboard.current == null)
+        if (loading)
             return;
 
-        if (Keyboard.current.wKey.wasPressedThisFrame)
-            MoveSelection(-1);
+        if (MenuInputSettings.WasPressed(MenuAction.Left))
+            MoveSelectionHorizontal(-1);
 
-        if (Keyboard.current.sKey.wasPressedThisFrame)
-            MoveSelection(1);
+        if (MenuInputSettings.WasPressed(MenuAction.Right))
+            MoveSelectionHorizontal(1);
 
-        if (Keyboard.current.enterKey.wasPressedThisFrame ||
-            Keyboard.current.numpadEnterKey.wasPressedThisFrame)
-        {
+        if (MenuInputSettings.WasPressed(MenuAction.Up))
+            MoveSelectionVertical(-1);
+
+        if (MenuInputSettings.WasPressed(MenuAction.Down))
+            MoveSelectionVertical(1);
+
+        if (MenuInputSettings.WasPressed(MenuAction.Confirm))
             SelectSlot();
+
+        if (MenuInputSettings.WasPressed(MenuAction.Back))
+        {
+            // Возвращаемся в главное меню.
+            SceneManager.LoadScene(0);
         }
     }
 
-    private void MoveSelection(int direction)
+    private void MoveSelectionHorizontal(int direction)
     {
-        selectedIndex =
-            (selectedIndex + direction + slotButtons.Length)
-            % slotButtons.Length;
+        int rowStart = (selectedIndex / 4) * 4;
+        int column = selectedIndex % 4;
+
+        column = (column + direction + 4) % 4;
+        selectedIndex = rowStart + column;
 
         UpdateTextColors();
     }
+
+    private void MoveSelectionVertical(int direction)
+    {
+        selectedIndex = (selectedIndex + direction * 4 + 8) % 8;
+
+        UpdateTextColors();
+    }
+
 
     private void UpdateTextColors()
     {

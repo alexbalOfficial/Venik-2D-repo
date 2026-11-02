@@ -6,6 +6,7 @@ public class MapTransition : MonoBehaviour
 {
     [SerializeField] private PolygonCollider2D mapBoundry;
     [SerializeField] private Direction direction;
+    [SerializeField] private Transform teleportTargetPosition;
     [SerializeField] private float addirivePos = 1f;
 
     private CinemachineConfiner confiner;
@@ -15,7 +16,8 @@ public class MapTransition : MonoBehaviour
         Up,
         Down,
         Left,
-        Right
+        Right,
+        Teleport
     }
 
     // ќбща€ блокировка дл€ всех переходов между картами.
@@ -66,6 +68,12 @@ public class MapTransition : MonoBehaviour
 
             if (confiner != null && mapBoundry != null)
                 confiner.m_BoundingShape2D = mapBoundry;
+
+            if(direction == Direction.Teleport)
+            {
+                target.transform.position = teleportTargetPosition.position;
+
+            }
 
             Vector3 newPos = target.transform.position;
 

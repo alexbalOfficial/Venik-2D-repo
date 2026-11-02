@@ -62,10 +62,12 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\NPC.cs" />
     <Compile Include="Assets\Scripts\IInteractable.cs" />
+    <Compile Include="Assets\Scripts\ScreenshotCapture.cs" />
     <Compile Include="Assets\Scripts\PauseController.cs" />
     <Compile Include="Assets\Scripts\MapTransition.cs" />
     <Compile Include="Assets\Scripts\MainMenu.cs" />
     <Compile Include="Assets\Scripts\SaveSelectionMenu.cs" />
+    <Compile Include="Assets\Scripts\MenuInputSettings.cs" />
     <Compile Include="Assets\Scripts\MotorcycleEngineSound.cs" />
     <Compile Include="Assets\Scripts\GlobalHelper.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
